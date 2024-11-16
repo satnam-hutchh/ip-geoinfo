@@ -43,5 +43,4 @@ class IpGeoinfoManager extends Manager
             throw $e;
         }
     }
-
 }

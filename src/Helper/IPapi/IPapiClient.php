@@ -1,5 +1,5 @@
 <?php
-namespace Hutchh\IpGeoinfo\Helper\IPinfo;
+namespace Hutchh\IpGeoinfo\Helper\IPapi;
 use Hutchh\IpGeoinfo\Helper;
 use Hutchh\IpGeoinfo\Payload;
 use Illuminate\Support\Facades\Log;
@@ -7,16 +7,16 @@ use Illuminate\Support\Collection;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Exception\ClientException;
-use Hutchh\IpGeoinfo\Resources\IPinfo\GeoLocationResource;
+use Hutchh\IpGeoinfo\Resources\IPapi\GeoLocationResource;
 /**
  * Class BaseSender.
  */
 
-class IPinfoClient extends Helper\HTTPClient implements Helper\ClientInterface {
+class IPapiClient extends Helper\HTTPClient implements Helper\ClientInterface {
 
     public function getIPGeoAddress(string $ipAddress){
         $response = null;
-        $request = new Request('GET', $ipAddress);
+        $request = new Request('GET', "json/$ipAddress");
         try {            
             $responseData       = $this->client->send($request);
             $response           = json_decode($responseData->getBody()->getContents(), true);

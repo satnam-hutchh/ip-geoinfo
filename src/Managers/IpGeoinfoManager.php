@@ -33,12 +33,47 @@ class IpGeoinfoManager extends Manager
             'base_uri'  => $config['base_url'],
             'handler'   => $handler,
         ]);
-        return new Helper\IpInfo\IpInfoClient($client, $config);
+        return new Helper\IPinfo\IPinfoClient($client, $config);
     }
 
-    public function convertFromIntent(Payload\ConvertFromPayloadBuilder $convertPayload){
+    protected function createIpApiDriver() : Helper\ClientInterface{
+        $config = $this->config->get('ipgeoinfo.ip-api', []);
+        $handler = HandlerStack::create();
+        $client = new Client([
+            // RequestOptions::HTTP_ERRORS     => false,
+            RequestOptions::HEADERS         => [
+                'accept'        => 'application/json',
+                'content-type'  => 'application/json',
+            ],
+            RequestOptions::TIMEOUT         => 15,
+            RequestOptions::CONNECT_TIMEOUT => 15,
+            'base_uri'  => $config['base_url'],
+            'handler'   => $handler,
+        ]);
+        return new Helper\IPapi\IPapiClient($client, $config);
+    }
+
+    protected function createIpStackDriver() : Helper\ClientInterface{
+        $config = $this->config->get('ipgeoinfo.ip-stack', []);
+        $handler = HandlerStack::create();
+        $handler->unshift(Helper\IPstack\Middleware::mapRequest($config));
+        $client = new Client([
+            // RequestOptions::HTTP_ERRORS     => false,
+            RequestOptions::HEADERS         => [
+                'accept'        => 'application/json',
+                'content-type'  => 'application/json',
+            ],
+            RequestOptions::TIMEOUT         => 15,
+            RequestOptions::CONNECT_TIMEOUT => 15,
+            'base_uri'  => $config['base_url'],
+            'handler'   => $handler,
+        ]);
+        return new Helper\IPstack\IPstackClient($client, $config);
+    }
+
+    public function getIPGeoAddress(string $ipAddress){
         try{
-            return $this->driver()->convertFromIntent($convertPayload);
+            return $this->driver()->getIPGeoAddress($ipAddress);
         }catch(\Throwable $e){
             throw $e;
         }

@@ -3,11 +3,12 @@
 namespace Hutchh\IpGeoinfo\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Str;
-use Hutchh\IpGeoinfo\Handler;
 use Illuminate\Support\Facades\Log;
 use Hutchh\IpGeoinfo\Managers;
+use Hutchh\IpGeoinfo\Facades;
 
 
 class IpGeoinfoServiceProvider extends ServiceProvider
@@ -25,6 +26,12 @@ class IpGeoinfoServiceProvider extends ServiceProvider
             abstract: Managers\IpGeoinfoManager::class,
             concrete: fn (Application $app) => new Managers\IpGeoinfoManager($app),
         );
+
+        // Get the AliasLoader instance
+        $loader = AliasLoader::getInstance();
+
+        // Add your aliases
+        $loader->alias('IPGeoAddress', Facades\ManagerFacade::class);
     }
 
     /**
